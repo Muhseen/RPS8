@@ -9,6 +9,8 @@ class Course extends Model
 {
     use HasFactory;
     public $primaryKey = "COURSE_ID";
+    public $guarded = [];
+    public $timestamps = false;
     public function ScoresBreakDown()
     {
         return $this->hasOne(ScoresBreakDown::class, 'course_id', 'COURSE_ID');

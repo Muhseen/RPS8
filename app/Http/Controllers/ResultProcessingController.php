@@ -39,7 +39,7 @@ class ResultProcessingController extends Controller
         if (Str::startsWith($type, "semester")) {
 
             $students = Student::select(['FIRST_NAME', 'MIDDLE_NAME', 'LAST_NAME', 'CURRENT_LEVEL', 'REG_NUMBER'])
-                ->where(['PROG_ID' => $prog_id, 'CURRENT_LEVEL' => $level])
+                ->where(['PROG_ID' => $prog_id, 'CURRENT_LEVEL' => $level, 'REGNO_STATUS' => 1])
                 ->with('registration', function ($query) use ($session, $semesters, $sem) {
                     return $query->where(['SESSION' => $session, 'SEMESTER' => $semesters[$sem - 1]]);
                 })->get();
@@ -54,7 +54,7 @@ class ResultProcessingController extends Controller
         } else {
 
             $studentsWithReg = Student::select(['FIRST_NAME', 'MIDDLE_NAME', 'LAST_NAME', 'CURRENT_LEVEL', 'REG_NUMBER'])
-                ->where(['PROG_ID' => $prog_id, 'CURRENT_LEVEL' => $level])
+                ->where(['PROG_ID' => $prog_id, 'CURRENT_LEVEL' => $level, 'REGNO_STATUS' => 1])
                 ->whereHas('registration')->with('registration')->get();
             $count = CourseRegistration::whereIn('REG_NUMBER', $studentsWithReg->pluck('REG_NUMBER'))
                 ->select(DB::raw("count(distinct semester, session) as count"))->get()[0]['count'];

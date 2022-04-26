@@ -15,6 +15,7 @@ use App\Models\ScoresBreakDown;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ScoresImport;
 use App\Models\ClassAllocation;
+use App\Models\ScoresUploadLog;
 
 class ScoresUploadController extends Controller
 {
@@ -39,7 +40,9 @@ class ScoresUploadController extends Controller
                 [
                     'session' => $request->session,
                     'semester' => $request->semester,
-                    'course_id' => $request->course_id
+                    'course_id' => $request->course_id,
+                    'file_no' => auth()->user()->file_no
+
                 ]
             )->first()->isLeadLec) {
                 return back()->withErrors('Only Lead Lecturers can upload examination scores for a course');
@@ -51,7 +54,7 @@ class ScoresUploadController extends Controller
         }
         $now = time();
         request()->validate([
-            'scoresFile' => 'required|mimes:xlsx,xls,csv'
+            'scoresFile' => 'required|mimes:xlsx ,xls,csv'
         ]);
 
         $semester = $request->semester;
@@ -118,7 +121,7 @@ class ScoresUploadController extends Controller
             //dd($query);
             DB::insert($query);
             DB::commit();
-            event(ScoresUploadedEvent::class);
+            ScoresUploadedEvent::dispatch(auth()->user()->file_no, $request->prog_id, $request->course_id, $prog->DEPT_ID, session('scoreType'));
             $filepath = "/scoresUpload/" . $prog->department->DEPARTMENT . "/" . $prog->PROG_TYPE . "/" . str_replace("_", "/", $session) . "/" . $semester . "/" . $type;
             $request->file("scoresFile")->storeAs($filepath, $request->file('scoresFile')->getClientOriginalName() . str_replace(":", "_", now()) . "." . $request->file('scoresFile')->extension());
             session()->flash('message', "Succesfully uplaoded in " . time() - $now . " second(s)");
@@ -127,6 +130,7 @@ class ScoresUploadController extends Controller
         } catch (\Exception $e) {
             //dd($e);
             DB::rollBack();
+            dd($e);
             return back()->withErrors($e);
         }
     }

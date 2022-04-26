@@ -9,6 +9,8 @@ class CourseRegistration extends Model
 {
     use HasFactory;
     public $table = "course_registrations";
+    public $primaryKey = "SN";
+    public $timestamps = false;
     public function student()
     {
         return $this->belongsTo(Student::class, 'REG_NUMBER', 'REG_NUMBER');

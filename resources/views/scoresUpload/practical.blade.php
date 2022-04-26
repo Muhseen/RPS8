@@ -3,16 +3,16 @@
 	<script src="{{ asset('js/rps/studentList.js') }}" defer type="text/javascript"></script>
 	<div class="container ">
 		@include('partials.messages')
-		<form action="/captureScores" method="POST" enctype="multipart/form-data">
+		<form action="/capturePracticalsScores" method="POST" enctype="multipart/form-data">
 			@csrf
-			<input type="hidden" name="type" id="practical" value="practicals">
+			<input type="hidden" name="type" id="type" value="practicals">
 			<div class="card-header">
 				<h1>Upload Practical Scores for this semester</h1>
 			</div>
 			<div class="row">
 				<div class="col-lg-4 col-md-6 col-sm-12">
 					<label for="progType"><b>Programme Type (Step1)</b></label>
-					<select onChange="getDept()" required id="programme_type" name="programme_pe" class="form-control form-control-sm">
+					<select onChange="getDept()" required id="programme_type" name="programme_type" class="form-control form-control-sm">
 						<option value="">select programme Type</option>
 						<option value="regular">Regular</option>
 						<option value="evening">Evening</option>
@@ -71,7 +71,7 @@
 				</div>
 				<div class="col-lg-4 col-md-6 col-sm-12 pt-4">
 					<div class="custom-file">
-						<label for="file" class=" custom-file-label">Select CSV scores
+						<label for="file" class=" custom-file-label">Select Excel Scores
 							file</label>
 						<input id="scoresFile" type="file" required name="scoresFile" class=" mt-3 form-control custom-file-input">
 					</div>

@@ -75,6 +75,7 @@ class StudentListController extends Controller
                 $worksheet->setCellValue("L6", "EXAM * {$metric}");
                 $worksheet->setCellValue("J6", "TEST TOTAL({$minTest}%)");
 
+
                 foreach ($regs as $reg) {
                     //$startIndex = strlen("KPT/" . $reg->student->dept);
                     //$regno = substr($reg->regno,$startIndex+1);
@@ -87,7 +88,7 @@ class StudentListController extends Controller
                         $worksheet->setCellValue("E" . $index, $reg->test2Score ?? 0);
                         $worksheet->setCellValue("F" . $index, $reg->assignment1Score ?? 0);
                         $worksheet->setCellValue("G" . $index, $reg->assignment2Score ?? 0);
-                        $worksheet->setCellValue("H" . $index, $reg->practicalScore ?? 0);
+                        $worksheet->setCellValue("H" . $index, $reg->practical1Score ?? 0);
                         //$worksheet->setCellValue("I" . $index, 0);
                         $worksheet->setCellValue("J" . $index, "=MIN({$minTest},SUM(D" . $index . ":I" . $index . "))");
                         $worksheet->setCellValue("K" . $index, ($reg->examination * (100 / $scoresBreakDown->examination)));
@@ -123,55 +124,56 @@ class StudentListController extends Controller
             $filename = Str::upper(str_replace('/', '_', $filename));
             return Response::download($file, $filename . ".xlsx", []);
         } else {
-            $cbr = scoresBreakdown::where('coursecode', $courseCode)->get()[0] ?? null;
+            $course_id = $request->course_id;
+            $cbr = scoresBreakdown::where('course_id', $course_id)->first();
+            $prog = Programme::where('PROG_ID', $request->prog_id)->first();
+            $course = Course::where('COURSE_ID', $course_id)->first();
             //dd($cbr);
             if ($cbr == null) {
-                return redirect('downloadStudentList')->withErrors("Practical Score Breakdown has not been set for this course ");
+                return back()->withErrors("Practical Score Breakdown has not been set for this course ");
             }
-            return $regs = reg::where([
-                'semester' => $semester,
-                'session' => $session,
-                'courseCode' => $courseCode,
-                'progType' => $progtype,
-                'dept' => $dept->DEPT_CODE
-            ])->with('student')->orderby('regno')->get();
+
+            $regs = CourseRegistration::where([
+                'SEMESTER' => $semesters[$semester - 1],
+                'SESSION' => $session,
+                'COURSE_ID' => $course->COURSE_ID,
+                'PROG_ID' => $prog->PROG_ID
+
+            ])->with('student:FIRST_NAME,MIDDLE_NAME,LAST_NAME,REG_NUMBER')->get();
             if ($regs->count() == 0) {
-                return redirect('exportStudentsList')->withErrors("No Students For the specified Criteria");
+                return back()->withErrors("No Students For the specified Criteria");
             } else {
 
+                //  dd("here");
                 $worksheet->setCellValue("A2", "COLLEGE OF " . $dept->college->COLLEGE);
                 $worksheet->setCellValue("A3", "DEPARTMENT OF " . $dept->DEPARTMENT);
-                $worksheet->setCellValue("A4", $courseCode . " (" . $progtype . ") " . $dept->DEPARTMENT . ", " . $session . " SESSION");
+                $worksheet->setCellValue("A4", $course->COURSE_CODE . " (" . $prog->PROG_TYPE . ") " . $prog->department->DEPARTMENT . ", " . $session . " SESSION");
                 $cols = array('D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V');
                 $index = 6;
-                for ($i = 0; $i < $cbr->practicalCount; $i++) {
+                for ($i = 0; $i < $cbr->practical_count; $i++) {
                     $worksheet->setCellValue($cols[$i] . $index, "PRACTICAL " . ($i + 1));
                 }
-                $worksheet->setCellValue($cols[$cbr->practicalCount] . $index, "TOTAL");
-                $worksheet->setCellValue($cols[$cbr->practicalCount + 1] . $index, "AVERAGE");
-
-
+                $worksheet->setCellValue($cols[$cbr->practical_count] . $index, "TOTAL");
+                $worksheet->setCellValue($cols[$cbr->practical_count + 1] . $index, "AVERAGE");
                 $index = 7;
                 foreach ($regs as $reg) {
-
-                    $startIndex = strlen("KPT/" . $reg->student->dept);
+                    //$startIndex = strlen("KPT/" . $reg->student->dept);
                     $worksheet->setCellValue("A" . $index, $index - 6);
-                    $worksheet->setCellValue("B" . $index, $reg->regno);
+                    $worksheet->setCellValue("B" . $index, $reg->REG_NUMBER);
                     $worksheet->setCellValue("C" . $index, $reg->student->fullname);
-
-                    for ($i = 0; $i < $cbr->practicalCount; $i++) {
+                    for ($i = 0; $i < $cbr->practical_count; $i++) {
                         $worksheet->setCellValue($cols[$i] . $index, 0);
                         $worksheet->getStyle($cols[$i] . $index)->getProtection()->setLocked(\PhpOffice\PhpSpreadsheet\Style\Protection::PROTECTION_UNPROTECTED);
                     }
-                    $worksheet->setCellValue($cols[$cbr->practicalCount] . $index, "=SUM(D" . $index . ":" . $cols[$cbr->practicalCount - 1] . $index . ")");
-                    $worksheet->setCellValue($cols[$cbr->practicalCount + 1] . $index, "=" . $cols[$cbr->practicalCount] . $index . "/" . $cbr->practicalCount);
-
+                    $worksheet->setCellValue($cols[$cbr->practical_count] . $index, "=SUM(D" . $index . ":" . $cols[$cbr->practical_count - 1] . $index . ")");
+                    $worksheet->setCellValue($cols[$cbr->practical_count + 1] . $index, "=" . $cols[$cbr->practical_count] . $index . "/" . $cbr->practical_count);
                     $index++;
                 }
                 $writer = new Xlsx($sSheet);
                 $writer->save("new file.xlsx");
                 $file = public_path('new file.xlsx');
-                $filename = "PRACTICALS-" . str_replace('', '-', $dept->DEPARTMENT) . "-" . str_replace('', '-', $courseCode) . "-" . str_replace('', '-', $progtype) . "-" . str_replace('', '-', $session);
+                $filename = "PRACTICALS-" . str_replace('', '-', $dept->DEPARTMENT) . "-" . str_replace('', '-', $course->COURSE_CODE) . "-" . str_replace('', '-', $prog->PROG_TYPE) . "-" . str_replace('', '-', $session);
+                $filename = str_replace("/", "_", $filename);
                 return Response::download($file, $filename . ".xlsx", []);
             }
         }

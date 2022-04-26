@@ -19,9 +19,18 @@ class ScoresUploadedEvent
      *
      * @return void
      */
-    public function __construct()
+    public $file_no;
+    public $dept_id;
+    public $score_type;
+    public $course_id;
+    public $prog_id;
+    public function __construct($file_no, $prog_id, $course_id, $dept_id, $score_type)
     {
-        //
+        $this->prog_id = $prog_id;
+        $this->dept_id = $dept_id;
+        $this->score_type = $score_type;
+        $this->course_id = $course_id;
+        $this->file_no = $file_no;
     }
 
     /**

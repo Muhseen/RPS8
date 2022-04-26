@@ -5,6 +5,7 @@ namespace App\Services\ResultsServices;
 use App\Models\Programme;
 use App\Models\Course;
 use App\Models\CourseRegistration;
+use App\Services\GradesServices\GradesServices;
 
 class  SemesterViewService
 {
@@ -96,7 +97,9 @@ class  SemesterViewService
                 foreach ($student->registration as $reg) {
                     if ($reg->COURSE_ID == $course->COURSE_ID) {
                         $bool = true;
-                        $cu += $course->CREDIT_UNITS;
+                        if (in_array($reg->grade, GradesServices::usableGrades())) {
+                            $cu += $course->CREDIT_UNITS;
+                        }
                         $regg = $reg;
                         break;
                     }
@@ -116,8 +119,8 @@ class  SemesterViewService
                     // dd($course->COURSE_CODE, $nRCourses, $nRCount);
                 }
             }
-            $cp =  $student->registration->sum('gradePoints'); //$courses->where('regno', $regno)->sum('gradePoints');
-            $failedCourses = $student->registration->where('grade', 'F');
+            $cp =  $student->registration->whereIn('grade', GradesServices::usableGrades())->sum('gradePoints'); //$courses->where('regno', $regno)->sum('gradePoints');
+            $failedCourses = $student->registration->whereIn('grade', GradesServices::failedGrades());
             //dd($failedCourses, $student->registration);
             $gp = $cu == 0 ? 0 : $cp / $cu;
             $gp = round($gp, 2, PHP_ROUND_HALF_UP);

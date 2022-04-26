@@ -23,7 +23,9 @@ class CreateGraduatedStudentsTable extends Migration
             $table->date('ACADEMIC_DATE');
             $table->string('COURSE');
             $table->string('DEPARTMENT');
-
+            $table->string('PROGRAMME');
+            $table->string('APPROVED_BY');
+            $table->string('PROCESSED_BY');
             $table->timestamps();
         });
     }

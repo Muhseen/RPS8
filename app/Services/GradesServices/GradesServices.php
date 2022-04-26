@@ -5,6 +5,14 @@ namespace App\Services\GradesServices;
 class GradesServices
 {
 
+    public static function usableGrades()
+    {
+        return   array('A', 'AB', 'B', 'BC', 'C', 'CD', 'D', 'DE', 'E',  'F', 'AW', 'IS', 'PI', 'PC', 'NA');
+    }
+    public static function failedGrades()
+    {
+        return   array('F', 'AW', 'IS', 'PI', 'PC', 'NA');
+    }
 
     public static function computeGrade($score)
     {
@@ -31,6 +39,33 @@ class GradesServices
                 return 'E';
             case $score >= 0 && $score <= 39:
                 return 'F';
+            case $score == -100:
+                return "AE";
+
+            case $score == -150:
+                return "PC";
+            case $score == -200:
+                return "AW";
+            case $score == -250:
+                return "NA";
+            case $score == -300:
+                return "EX";
+            case $score == -400:
+                return "EM";
+            case $score == -500:
+                return "NR";
+            case $score == -600:
+                return "SK";
+            case $score == -700:
+                return "CP";
+            case $score == -800:
+                return "PI";
+            case $score == -900:
+                return "IS";
+            case $score == -950:
+                return "NN";
+            case $score == -970:
+                return "DE";
         }
     }
     public static function computePoints($score)
@@ -57,6 +92,8 @@ class GradesServices
             case $score >= 40 && $score <= 44:
                 return 2.0;
             case $score >= 0 && $score <= 39:
+                return 0.0;
+            case $score < 0:
                 return 0.0;
         }
     }

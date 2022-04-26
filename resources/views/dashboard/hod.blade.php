@@ -25,6 +25,7 @@
 
 					</div>
 				</div>
+
 				<!-- /.col-->
 				<div class="col-sm-6 col-lg-3">
 					<div class="card text-white bg-info h-100">
@@ -452,8 +453,10 @@
 				</div>
 				<!-- /.col-->
 			</div>
-			<!-- /.row-->
+			@include('dashboard.shared.recentUploadsTable')
 		</div>
+		<!-- /.row-->
+	</div>
 
 	</div>
 @endsection

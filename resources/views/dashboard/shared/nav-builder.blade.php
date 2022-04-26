@@ -75,7 +75,7 @@
 					</a>
 				</li>
 				<li class="nav-item">
-					<a class="c-sidebar-nav-link c-active" href="{{ route('dashboard') }}">
+					<a class="c-sidebar-nav-link c-active" href="/specialCases">
 						<i class="cil-data-transfer-up c-sidebar-nav-icon"></i>
 						Update Absentee info
 					</a>
@@ -105,6 +105,27 @@
 					<a class="c-sidebar-nav-link c-active" href="{{ route('classAllocation.index') }}">
 						<i class="cil-update c-sidebar-nav-icon"></i>
 						View Class Allocations
+					</a>
+				</li>
+
+			</ul>
+		</li>
+	@endif
+	@if (auth()->user()->can('allocate-class'))
+		<li class="c-sidebar-nav-dropdown">
+			<a class="c-sidebar-nav-dropdown-toggle" href="#">
+				<i class="cil-playlist-add c-sidebar-nav-icon"></i>
+				Manage Courses</a>
+			<ul class="c-sidebar-nav-dropdown-items">
+				<li class="nav-item"><a class="c-sidebar-nav-link c-active" href="{{ route('courses.index') }}">
+						<i class="cil-spreadsheet  c-sidebar-nav-icon"></i>
+						View Courses
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="c-sidebar-nav-link c-active" href="{{ route('courses.create') }}">
+						<i class="cil-update c-sidebar-nav-icon"></i>
+						Add New Course
 					</a>
 				</li>
 

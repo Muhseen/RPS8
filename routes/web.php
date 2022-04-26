@@ -13,7 +13,10 @@ use App\Http\Controllers\ScoresUploadController;
 use App\Http\Controllers\StatementOfResultController;
 use App\Http\Controllers\TFAController;
 use App\Http\Controllers\ScoresBreakDownController;
-
+use App\Http\Controllers\SpecialGradesController;
+use App\Models\Student;
+use Symfony\Component\HttpKernel\HttpKernel;
+use App\Http\Controllers\PracticalsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +39,7 @@ Route::middleware(['auth'])->group(function () {
     });
     Route::get('/role/{id}/addPermission', [App\Http\Controllers\RolesController::class, 'addPermission']);
 
+    Route::resource('/courses', CourseController::class);
     Route::resource('/roles',  RolesController::class);
     Route::resource('/permissions',    PermissionsController::class);
     Route::get('/scoresBreakDown', [ScoresBreakDownController::class, 'index']);
@@ -43,10 +47,15 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/scoresBreakDown/{id}/destroy', [ScoresBreakDownController::class, 'destroy']);
     Route::patch('/scoresBreakDown', [ScoresBreakDownController::class, 'update']);
 
-    Route::view('/practicals', 'scoresUpload.practical');
+    Route::get('/practicals', function () {
+        session()->put('scoreType', 'practicals');
+        return view('scoresUpload.practical');
+    });
     Route::get('/statementOfResult', function () {
         return view('results.SORView');
     });
+    Route::post('/capturePracticalsScores', [PracticalsController::class, 'captureScores']);
+    Route::get('/getPracticalsConducted', [PracticalsController::class, 'getPracticalsConducted']);
     Route::POST('/statementOfResult', [StatementOfResultController::class, 'index']);
 
     Route::get('/uploadScores/{type}', [ScoresUploadController::class, 'index']);
@@ -60,9 +69,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/processResults', [ResultProcessingController::class, 'index']);
     Route::post('/processResults', [ResultProcessingController::class, 'process']);
 
+    Route::get('/specialCases', [SpecialGradesController::class, 'index']);
+    Route::post('/studentSpecialCase', [SpecialGradesController::class, 'studentCase']);
+    Route::post('/classSpecialCase', [SpecialGradesController::class, 'classCase']);
+
     //api calls
     Route::get('/getStaffByFileNo', function (HttpRequest $request) {
         return StaffServices::getStaffByFileNo($request->file_no);
+    });
+    Route::get('/getStudentByRegNo', function (HttpRequest $request) {
+        return Student::with(['programme', 'department', 'programme.course'])->where('REG_NUMBER', $request->reg_no)->first();
     });
 
     Route::get('/getProgrammesByDeptAndType', function (HttpRequest $request) {

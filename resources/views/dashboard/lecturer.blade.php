@@ -18,7 +18,7 @@
 										class="dropdown-item" href="#">Another action</a><a class="dropdown-item" href="#">Something else here</a>
 								</div>
 							</div>
-							<div class="text-value-lg">Classes Allocated/Session</div>
+							<div class="text-value-lg">Session / No Classes Allocated</div>
 							<div>
 								@foreach ($courses as $course)
 									{{ $course->first()->session }}- {{ $course->count() }} <br>
@@ -39,7 +39,7 @@
 									<use xlink:href="assets/icons/coreui/free-symbol-defs.svg#cui-location-pin"></use>
 								</svg>
 							</button>
-							<div class="text-value-lg">Programmes</div>
+							<div class="text-value-lg">Programme(s )</div>
 							<div>{{ $classAllocations->groupBy('prog_id')->count() }}</div>
 						</div>
 						<div class="c-chart-wrapper mt-3 mx-3" style="height:70px;">
@@ -62,7 +62,7 @@
 										class="dropdown-item" href="#">Another action</a><a class="dropdown-item" href="#">Something else here</a>
 								</div>
 							</div>
-							<div class="text-value-lg">Departments</div>
+							<div class="text-value-lg">Department(s)</div>
 							<div>{{ $classAllocations->groupBy('dept_id')->count() }}</div>
 						</div>
 						<div class="c-chart-wrapper mt-3" style="height:70px;">
@@ -98,6 +98,9 @@
 			<div class="row">
 				<table class="table table-striped-table-bordered">
 					<tr>
+						<th colspan="8" class="text-center">List and details of classes that have been allocated to you...</th>
+					</tr>
+					<tr>
 						<th>S/N</th>
 						<th>Session</th>
 						<th>Semester</th>
@@ -118,11 +121,6 @@
 							<td>{{ $ca->courseRel->CREDIT_UNITS }}</td>
 							<td>{{ $ca->progRel->PROGRAMME }}</td>
 							<td>{{ $ca->deptRel->DEPARTMENT }}</td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
 						</tr>
 					@endforeach
 				</table>
