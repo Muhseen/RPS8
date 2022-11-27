@@ -1,6 +1,7 @@
 @extends('dashboard.base')
 @section('content')
 	<div class="container">
+		@include('partials.messages')
 		<form action="/statementOfResult" method="POST">
 			@csrf
 			<div class="row">

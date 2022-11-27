@@ -16,6 +16,11 @@ class Programme extends Model
     {
         return $this->belongsTo(School::class, 'SCH_ID', 'SCH_ID');
     }
+    public function college()
+    {
+        return $this->belongsTo(School::class, 'COL_ID', 'COL_ID');
+    }
+
     public function course()
     {
         return $this->hasMany(Course::class, 'PROG_ID', 'PROG_ID');

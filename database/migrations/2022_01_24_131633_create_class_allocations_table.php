@@ -21,7 +21,7 @@ class CreateClassAllocationsTable extends Migration
             $table->string('session');
             $table->string('semester');
             $table->string('added_by');
-            $table->int('level');
+            $table->integer('level');
             $table->boolean('isLeadLec');
             $table->integer('prog_id');
             $table->integer('dept_id');

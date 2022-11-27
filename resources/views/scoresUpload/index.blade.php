@@ -44,19 +44,19 @@
 						<div class="row">
 							<div class="col-lg-4 col-md-6 col-sm-12">
 								<label for=><b>Session</b></label>
-								<select name="session" id="session" class="form-control form-control-sm MB-2">
+								<select name="session" id="session" onchange="getSemester()" class="form-control  mb-2">
 								</select>
 							</div>
 							<div class="col-lg-4 col-md-6 col-sm-12">
 								<label for=><b>Semester</b></label>
-								<select name="semester" id="semester" class="form-control form-control-sm MB-2">
+								<select name="semester" id="semester" onchange="getCourses()    " class="form-control mb-2">
 								</select>
 
 							</div>
 							<div class="col-lg-4 col-md-6 col-sm-12">
 								<div class="form-group">
 									<label class="mx-1" for="exampleInputEmail2"><b>Course</b></label>
-									<select class="form-control form-control-sm" id="course_id" name="course_id">
+									<select class="form-control" id="course_id" name="course_id">
 									</select>
 								</div>
 							</div>
@@ -74,7 +74,7 @@
 							</div>
 						</div>
 					</div>
-					<input type="hidden" value="{{ $scoreType }}" name="type">
+					<input type="hidden" value="{{ $scoreType }}" name="type" id="type">
 				</form>
 			</div>
 

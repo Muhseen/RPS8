@@ -6,11 +6,12 @@ use App\Models\Programme;
 use App\Models\Course;
 use App\Models\CourseRegistration;
 use App\Services\GradesServices\GradesServices;
+use Illuminate\Http\Request;
 
 class  SemesterViewService
 {
 
-    public static function generateTable($studentsWithReg, $prog_id, $withScores, $sem, $session)
+    public static function generateTable($request, $studentsWithReg, $prog_id, $withScores, $sem, $session)
     {
         $semesters = ['First', 'Second'];
         $prog = Programme::where('PROG_ID', $prog_id)->first();
@@ -28,8 +29,8 @@ class  SemesterViewService
                 KADUNA POLYTECHNIC <br></span>
                 <span class="h6">College of  ' . $prog->department->college->COLLEGE . '<br>
                 School of ' . $prog->school->SCHOOL . ' <br>
-                Department of ' . $prog->department->DEPARTMENT . '
-                </span>
+                Department of ' . $prog->department->DEPARTMENT . ' <br>
+                Programme : ' . $prog->PROGRAMME . ' <br>Level : ' . $request->level . ' </span>
                 <br>
                 </th>
                 <th>
@@ -39,7 +40,7 @@ class  SemesterViewService
             </tr>
 
                 <tr >
-                        <th colspan="2"> Student Details</th>
+                        <th colspan="3" class="text-center"> Student Details</th>
                         <th class="text-center"colspan="' . count($courses) . '">Semester Performance</th>
                         <th colspan="3">Current Semester</th>
                         <th colspan="3">Previous Cumulative</th>
@@ -47,6 +48,7 @@ class  SemesterViewService
 
                         </tr>
                     <tr>
+                        <th>S/N</th>
                         <th>Regno</th>
                         <th>Name</th>';
 
@@ -82,15 +84,16 @@ class  SemesterViewService
     public static function generateRowsForSemester($studentsWithReg, $courses, $withScores, $sem)
     {
         $table = "";
+        $sn = 0;
         foreach ($studentsWithReg as $student) {
             $nRCourses = [];
             $nRCount = 0;
-
+            $sn++;
             $cu = 0;
             $cp = 0;
             $regg = new CourseRegistration();
 
-            $table .= "<tr><td style='white-space:nowrap !important ;text-align:left;'>{$student->REG_NUMBER}</td><td style='white-space:nowrap !important ;text-align:left;'>{$student->fullname}</td>";
+            $table .= "<tr><td>" . $sn . "</td><td style='white-space:nowrap !important ;text-align:left;'>{$student->REG_NUMBER}</td><td style='white-space:nowrap !important ;text-align:left;'>{$student->fullname}</td>";
             for ($i = 0; $i < count($courses); $i++) {
                 $bool = false;
                 $course = $courses[$i];

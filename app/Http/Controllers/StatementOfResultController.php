@@ -11,6 +11,9 @@ class StatementOfResultController extends Controller
 
     {
         $student = GraduatedStudents::where('REG_NUMBER', $request->REG_NUMBER)->first();
+        if ($student == null) {
+            return back()->withErrors('Invalid Registration Number Provided');
+        }
         $table = "<table class='table text-center' style='border:none'>
         <tbody>
         <tr>
@@ -33,7 +36,7 @@ class StatementOfResultController extends Controller
             of Kaduna polytechnic in <b><upper>" . $student->DEPARTMENT . "</b></upper><br>
             at <b>" . $student->CLASS_OF_DEGREE . "</b> level with effect from " . $student->ACADEMIC_DATE . ".<br>
             on behalf of the Rector, I congratulate you on your success.
-            
+
             The Certificate will be issued in due course.
 
             </td>

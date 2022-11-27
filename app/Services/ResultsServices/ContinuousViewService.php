@@ -8,8 +8,9 @@ use App\Models\CourseRegistration;
 class ContinuousViewService
 {
 
-    public static function generateResults($studentsWithReg, $course, $withScores, $prog)
+    public static function generateResults($request, $studentsWithReg, $course, $withScores, $prog)
     {
+        //dd($prog, $prog->department);
         $distinctCourses = $course->groupBy('SEMESTER');
         $table = '<table style="overflow:auto;" class="table table-scrollable table-responsive-sm table-striped table-dark table-bordered">
         <thead>
@@ -21,7 +22,9 @@ class ContinuousViewService
             KADUNA POLYTECHNIC <br></span>
             <span class="h6">College of  ' . $prog->department->college->COLLEGE . '<br>
             School of ' . $prog->school->SCHOOL . ' <br>
-            Department of ' . $prog->department->DEPARTMENT . '
+            Department of ' . $prog->department->DEPARTMENT . ' <br>
+            Programme : ' . $prog->PROGRAMME . ' <br>Level : ' . $request->level . '
+
             </span>
             <br>
             </th>

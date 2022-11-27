@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\ScoresUploadedEvent;
+use App\Http\Requests\ScoresUploadRequest;
 use App\Models\Course;
 use App\Models\CourseRegistration;
 use App\Models\Grades;
@@ -45,18 +46,14 @@ class ScoresUploadController extends Controller
 
                 ]
             )->first()->isLeadLec) {
-                return back()->withErrors('Only Lead Lecturers can upload examination scores for a course');
+                return back()->withErrors('Only Lead Lecturers can upload Examination scores for a course');
             }
         }
         $type = Str::lower($request->type);
         if ($type != session('scoreType')) {
-            return back()->withErrors('Scores to being uploaded do not match the submitted expected score type');
+            return back()->withErrors(@"Scores being uploaded do not match the Expected score type, Please upload " . session('scoreType') . " as Selected");
         }
         $now = time();
-        request()->validate([
-            'scoresFile' => 'required|mimes:xlsx ,xls,csv'
-        ]);
-
         $semester = $request->semester;
         $session = $request->session;
         $course = Course::where('course_id', $request->course_id)->first();
@@ -104,10 +101,15 @@ class ScoresUploadController extends Controller
 
                             if ($type == "examination") {
                                 $score = ($score / 100) * $sbr->$col;
-                                // dd($score, $col, $index, $type, $score);
+                            } else {
+                                if ($score > $sbr->$col) {
+                                    $r->$col = $sbr->$col;
+                                } else if ($score < 0) {
+                                    $r->$col = 0;
+                                } else {
+                                    $r->$col = $score;
+                                }
                             }
-
-                            $r->$col = ($score < 0 || $score > $sbr->$col) ? 0 : $score;
                         }
                         $r->grade = GradesServices::computeGrade($r->total);
                         $r->gradePoints = $course->CREDIT_UNITS * GradesServices::computePoints($r->total);
@@ -122,9 +124,7 @@ class ScoresUploadController extends Controller
             DB::insert($query);
             DB::commit();
             ScoresUploadedEvent::dispatch(auth()->user()->file_no, $request->prog_id, $request->course_id, $prog->DEPT_ID, session('scoreType'));
-            $filepath = "/scoresUpload/" . $prog->department->DEPARTMENT . "/" . $prog->PROG_TYPE . "/" . str_replace("_", "/", $session) . "/" . $semester . "/" . $type;
-            $request->file("scoresFile")->storeAs($filepath, $request->file('scoresFile')->getClientOriginalName() . str_replace(":", "_", now()) . "." . $request->file('scoresFile')->extension());
-            session()->flash('message', "Succesfully uplaoded in " . time() - $now . " second(s)");
+
             return redirect()->back();
             //dd("commit", time() - $now);
         } catch (\Exception $e) {

@@ -79,6 +79,9 @@ class StudentListController extends Controller
                 foreach ($regs as $reg) {
                     //$startIndex = strlen("KPT/" . $reg->student->dept);
                     //$regno = substr($reg->regno,$startIndex+1);
+                    if ($reg->REG_NUMBER == null || $reg->student == null) {
+                        continue;
+                    }
                     try {
                         // dd($reg);
                         $worksheet->setCellValue("A" . $index, $index - 6);

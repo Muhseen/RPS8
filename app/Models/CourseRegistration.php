@@ -19,4 +19,8 @@ class CourseRegistration extends Model
     {
         return $this->test1Score + $this->test2Score + $this->assignment1Score + $this->assignment2Score + $this->practical1Score + $this->examination;
     }
+    public function course()
+    {
+        return $this->belongsTo(Course::class, 'COURSE_ID', 'COURSE_ID');
+    }
 }

@@ -4,6 +4,7 @@
 	<form action="/processResults" method="POST">
 		@csrf
 		<div class="container">
+			@include('partials.messages')
 			<div class="card-header">
 				<h3 class="text-uppercase">Process {{ auth()->user()->staff->department }} results</h3>
 			</div>
@@ -40,7 +41,6 @@
 					<label for=""><b>Session</b></label>
 
 					<select class="custom-select-sm custom-select" name="session" id="">
-						<option value="2020/2021">2019/2020</option>
 						<option value="2020/2021">2020/2021</option>
 						<option value="2021/2022">2021/2022</option>
 						<option value="2022/2023">2022/2023</option>

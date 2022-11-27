@@ -10,7 +10,9 @@ use App\Services\ResultsServices\SemesterViewService;
 use App\Models\Course;
 use App\Models\CourseRegistration;
 use App\Models\Programme;
-
+use App\Http\Requests\ProcessResultRequest;
+use App\Models\ResultAnalysisData;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use mysqli;
 
@@ -18,6 +20,7 @@ class ResultProcessingController extends Controller
 {
     public function __construct()
     {
+        $this->allGrades = ["AA", "A", "AB", "B", "BC", "C", "CD", "D", "E", "F", "AE", "AW", "PC", "NA", "OP", "EM", "NR", "SK", "CP", "DE", "DF"];
         $this->middleware('EO');
     }
     public function index()
@@ -25,10 +28,10 @@ class ResultProcessingController extends Controller
 
         return  view('results.index');
     }
-    public function process(Request $request)
+    public function process(ProcessResultRequest  $request)
     {
-        //dd("here");
-        //$request->validate();
+        $start = memory_get_usage();
+        //dd($start);
         $grades = array('A', 'AB', 'B', 'BC', 'C', 'CD', 'D', 'DE', 'E', 'EF', 'F', 'AW', 'AE');
         $level = $request->level;
         $prog_id = $request->prog_id;
@@ -40,22 +43,50 @@ class ResultProcessingController extends Controller
 
             $students = Student::select(['FIRST_NAME', 'MIDDLE_NAME', 'LAST_NAME', 'CURRENT_LEVEL', 'REG_NUMBER'])
                 ->where(['PROG_ID' => $prog_id, 'CURRENT_LEVEL' => $level, 'REGNO_STATUS' => 1])
+                ->whereHas('registration', function ($query) use ($session, $semesters, $sem) {
+                    return $query->where(['SESSION' => $session, 'SEMESTER' => $semesters[$sem - 1]]);
+                })
                 ->with('registration', function ($query) use ($session, $semesters, $sem) {
                     return $query->where(['SESSION' => $session, 'SEMESTER' => $semesters[$sem - 1]]);
                 })->get();
+            if ($students->count() == 0) {
+                return back()->withErrors("No Students with the specified criteria or No Student Has registered for selected Criteria");
+            }
+            $stats = CourseRegistration::where(['SESSION' => $session, 'SEMESTER' => $semesters[$sem - 1], 'PROG_ID' => $prog_id, 'LEVEL' => $level])->with('course')->get();
+            $sTable = "<table class='table table-boredered table-striped'><tr><th>Course</th> <th>COURSE CODE</th>";
+            for ($i = 0; $i < count($this->allGrades); $i++) {
+                $sTable .= "<th>" . $this->allGrades[$i] . "</th>";
+            }
+            $sTable .= "<th>Total</th><th>Mean</th><th>STD DEV</th><th>% Pass</th> ";
+            $statsByCourse = $stats->groupBy('COURSE_ID');
+            foreach ($statsByCourse as $sc) {
+                $analysis = ResultAnalysisData::where(['session' => $session, 'course_id' => $sc->first()->course->COURSE_ID])->first();
+                $sTable .= "<tr><th>" . $sc->first()->course->COURSE_NAME . "</th><th>" . $sc->first()->course->COURSE_CODE . "</th>";
+                for ($i = 0; $i < count($this->allGrades); $i++) {
+                    $sTable .= "<th>" . $sc->where('grade', $this->allGrades[$i])->count() . " </th>";
+                }
+                $sTable .= "<th>" . $sc->count() . "</th><th>" . $this->formatPoints($analysis->mean) . "</th><th>" . $this->formatPoints($analysis->standardDev) . "</th> <th>100</th>";
+                $sTable .= "</tr>";
+            }
+            $sTable .= "</table>";
+
+            //dd($sTable);
             $table = SemesterViewService::generateTable(
+                $request,
                 $students,
                 $prog_id,
                 Str::endsWith($type, "-1"),
                 $sem,
                 $session
             );
-            return view('results.semester')->withTable($table);
+            return view('results.semester')->withTable($table)->withSTable($sTable);
         } else {
-
             $studentsWithReg = Student::select(['FIRST_NAME', 'MIDDLE_NAME', 'LAST_NAME', 'CURRENT_LEVEL', 'REG_NUMBER'])
                 ->where(['PROG_ID' => $prog_id, 'CURRENT_LEVEL' => $level, 'REGNO_STATUS' => 1])
                 ->whereHas('registration')->with('registration')->get();
+            if ($studentsWithReg->count() == 0) {
+                return back()->withErrors("No students with the specified criteria");
+            }
             $count = CourseRegistration::whereIn('REG_NUMBER', $studentsWithReg->pluck('REG_NUMBER'))
                 ->select(DB::raw("count(distinct semester, session) as count"))->get()[0]['count'];
             $programme = Programme::where('PROG_ID', $prog_id)->first();
@@ -95,10 +126,11 @@ class ResultProcessingController extends Controller
             }
             $courses = $courses->get();
             $table = ContinuousViewService::generateResults(
+                $request,
                 $studentsWithReg,
                 $courses,
                 Str::endsWith($type, "-1"),
-                Programme::where('PROG_ID', $prog_id)->first()
+                Programme::where('PROG_ID', $prog_id)->with(['department', 'college', 'school'])->first()
             );
             return view('results.semester')->withTable($table);
         }
@@ -127,5 +159,9 @@ class ResultProcessingController extends Controller
             $table = ResultProcessor::ProcessContinuousResult($reg, $courses, $students, $semesters, Str::endsWith($type, "-1"));
             return view('results.dept')->withTable($table);
             }*/
+    }
+    public function formatPoints($number)
+    {
+        return number_format($number, 2, ".", "");
     }
 }

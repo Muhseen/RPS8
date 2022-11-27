@@ -13,13 +13,22 @@ class CreateExampleTable extends Migration
      */
     public function up()
     {
-        Schema::create('example', function (Blueprint $table) {
+
+$tableName ="example";
+        if (Schema::hasTable($tableName)) {
+
+    Schema::dropDatabaseIfExists($tableName);
+
+}
+
+        Schema::create($tableName, function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->timestamps();
             $table->string('name');
             $table->string('description');
             $table->integer('status_id')->unsigned();
         });
+    }
     }
 
     /**
