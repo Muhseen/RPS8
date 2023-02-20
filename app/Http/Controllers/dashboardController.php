@@ -20,7 +20,8 @@ class dashboardController extends Controller
     {
         //Role::create(['name' => 'HOD']);
         //auth()->user()->assignRole('HOD');
-        $dept_id = auth()->user()->staff->dept->DEPT_ID;
+        //dd(auth()->user()->staff);
+        $dept_id = auth()->user()->staff->dept->DEPT_ID ?? 13;
         if (auth()->user()->hasRole('HOD')) {
             $studentsCount = Cache::remember($dept_id . 'studentCount', 3600, function () use ($dept_id) {
                 return    Student::where('DEPT_ID', $dept_id)->count();
@@ -53,7 +54,7 @@ class dashboardController extends Controller
             $progCount = Cache::remember($dept_id . 'progCount', 3600, function () use ($dept_id) {
                 return  Programme::where('DEPT_ID', $dept_id)->count();
             });
-            $scoresUpload = ScoresUploadLog::with(['course', 'staff'])->where('dept_id', auth()->user()->staff->dept_id)->orderBY('id', 'DESC')->paginate(10);
+            $scoresUpload = ScoresUploadLog::with(['course', 'staff'])->where('dept_id', $dept_id)->orderBY('id', 'DESC')->paginate(10);
             return view('dashboard.examOfficer')
                 ->withStudentCount($studentsCount)
                 ->withTotalCourses($coursesCount)

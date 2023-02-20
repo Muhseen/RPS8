@@ -54,6 +54,7 @@ class RegisterController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'department_id' => ['required'],
             'email' => ['required'],
+            'menuroles' => ['required'],
         ], ['file_no.unique' => 'This user is already registered']);
     }
 
@@ -65,13 +66,14 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        //  dd($data);
+        //dd($data);
         $user =  User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'file_no' => $data['file_no'],
             'depatment_id' => $data['department_id'],
             'password' => Hash::make($data['password']),
+            'menuroles' => $data["menuroles"],
         ]);
         //$user->assignRole('user');
         return $user;

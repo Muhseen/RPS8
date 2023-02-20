@@ -17,9 +17,10 @@ class  SemesterViewService
         $prog = Programme::where('PROG_ID', $prog_id)->first();
         $courses = Course::where(['PROG_ID' => $prog_id, 'LEVEL' => $studentsWithReg->first()->CURRENT_LEVEL, 'SEMESTER' => $semesters[$sem - 1]])
             ->orderBy('COURSE_CODE')->get();
+        //dd($courses, $studentsWithReg->first(), $prog_id, $withScores, $sem, $session);
         $now = time();
-        $table = '<table style="overflow:auto;font-family: "Lucida Console", "Courier New", monospace; " class="table table-scrollable table-responsive-sm table-striped table-dark table-bordered">
-                <thead>
+        $table = '<table  id="resultTable" style="overflow:auto;font-family: "Lucida Console", "Courier New", monospace; " class="table table-scrollable table-responsive-sm table-striped table-dark table-bordered">
+                <thead class="stickyHead">
                 <tr>
                 <th>
                     <img src="' . asset('./images/logo.jpg') . '" alt="logo" width="100px" >
@@ -40,31 +41,31 @@ class  SemesterViewService
             </tr>
 
                 <tr >
-                        <th colspan="3" class="text-center"> Student Details</th>
-                        <th class="text-center"colspan="' . count($courses) . '">Semester Performance</th>
-                        <th colspan="3">Current Semester</th>
-                        <th colspan="3">Previous Cumulative</th>
-                        <th colspan="3">Current Cumulative</th>
+                        <th colspan="3" class="text-center" class="position-sticky top-0"> Student Details</th>
+                        <th class="text-center"colspan="' . count($courses) . '" class="position-sticky top-0">Semester Performance</th>
+                        <th colspan="3" >Current Semester</th>
+                        <th colspan="3" >Previous Cumulative</th>
+                        <th colspan="3" >Current Cumulative</th>
 
                         </tr>
                     <tr>
-                        <th>S/N</th>
-                        <th>Regno</th>
-                        <th>Name</th>';
+                        <th class="position-sticky top-0">S/N</th>
+                        <th class="position-sticky top-0">Regno</th>
+                        <th class="position-sticky top-0">Name</th>';
 
         foreach ($courses as $course) {
-            $table .= ' <th style="text-align:center;">' . $course->COURSE_CODE . '<br>(' . $course->CREDIT_UNITS . ')</th>';
+            $table .= ' <th style="text-align:center;" class="position-sticky top-0">' . $course->COURSE_CODE . '<br>(' . $course->CREDIT_UNITS . ')</th>';
         }
-        $table .= "  <th>CP</th>
-                    <th>CU</th>
-                    <th>GP</th>
-                    <th>CP</th>
-                    <th>CU</th>
-                    <th>GP</th>
-                    <th>CP</th>
-                    <th>CU</th>
-                    <th>GP</th>
-                    <th>Remarks</th>
+        $table .= "  <th class='position-sticky top-0'>CP</th>
+                    <th class='position-sticky top-0'>CU</th>
+                    <th class='position-sticky top-0'>GPA</th>
+                    <th class='position-sticky top-0'>CP</th>
+                    <th class='position-sticky top-0'>CU</th>
+                    <th class='position-sticky top-0'>GPA</th>
+                    <th class='position-sticky top-0'>CP</th>
+                    <th class='position-sticky top-0'>CU</th>
+                    <th class='position-sticky top-0'>GPA</th>
+                    <th class='position-sticky top-0'>Remarks</th>
                      </tr>
                     </thead>
                      <tbody style='font-size:8px !important;'>";
@@ -92,14 +93,16 @@ class  SemesterViewService
             $cu = 0;
             $cp = 0;
             $regg = new CourseRegistration();
-
+            $courseCount = count($courses);
             $table .= "<tr><td>" . $sn . "</td><td style='white-space:nowrap !important ;text-align:left;'>{$student->REG_NUMBER}</td><td style='white-space:nowrap !important ;text-align:left;'>{$student->fullname}</td>";
-            for ($i = 0; $i < count($courses); $i++) {
-                $bool = false;
+            for ($i = 0; $i < $courseCount; $i++) {
+                $courseFound = false;
                 $course = $courses[$i];
+                //dd($student->registration, $course);
                 foreach ($student->registration as $reg) {
                     if ($reg->COURSE_ID == $course->COURSE_ID) {
-                        $bool = true;
+
+                        $courseFound = true;
                         if (in_array($reg->grade, GradesServices::usableGrades())) {
                             $cu += $course->CREDIT_UNITS;
                         }
@@ -107,7 +110,7 @@ class  SemesterViewService
                         break;
                     }
                 }
-                if ($bool) {
+                if ($courseFound) {
                     //dd($regg, $regg->grade, $regg->total);
                     $total = $regg->total; //$course->test1Score + $course->test2Score + $course->practical1Score + $course->practical2Score + $course->assignment1Score + $course->assignment2Score + $course->examScore;
                     $table .= "<td>" . $regg->grade;

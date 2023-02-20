@@ -41,7 +41,8 @@ class ClassAllocationController extends Controller
                 ]
             );
         }
-        $attr = array_merge($attr, ['dept_id' => auth()->user()->staff->dept_id, 'added_by' => auth()->user()->file_no ?? 13283, 'isLeadLec' => $request->has('isLeadLec')]);
+        $course = Course::whereCourseId($request->course_id)->first();
+        $attr = array_merge($attr, ['course_code' => $course->COURSE_CODE, 'dept_id' => auth()->user()->staff->dept_id, 'added_by' => auth()->user()->file_no ?? 13283, 'isLeadLec' => $request->has('isLeadLec')]);
         ClassAllocation::create($attr);
         session()->flash('message', "Succesfully Allocated Course  to {$request->staff_name}");
         return redirect('/classAllocation');

@@ -153,8 +153,9 @@
 			</ul>
 		</li>
 	@endif
+	{{-- @if (auth()->user()->hasRole('admin')) --}}
 	@if (1)
-		{{-- auth()->user()->hasRole('admin') --}}
+		{{-- p --}}
 		<li class="c-sidebar-nav-dropdown">
 			<a class="c-sidebar-nav-dropdown-toggle" href="#">
 				<i class="cil-settings  c-sidebar-nav-icon"></i>

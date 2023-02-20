@@ -96,19 +96,36 @@ class ScoresUploadController extends Controller
             foreach ($reg as $r) {
                 foreach ($sheet as $row) {
                     if (Str::lower($r->REG_NUMBER) == Str::lower($row[1])) { {
-                            $score = $row[$excelIndex[$index]];
-                            $col = $columns[$index];
+                            // $score = $row[$excelIndex[$index]];
+                            // $col = $columns[$index];
 
-                            if ($type == "examination") {
-                                $score = ($score / 100) * $sbr->$col;
+                            // if ($type == "examination") {
+                            //     $score = ($score / 100) * $sbr->$col;
+                            // } else {
+                            //     if ($score > $sbr->$col) {
+                            //         $r->$col = $sbr->$col;
+                            //     } else if ($score < 0) {
+                            //         $r->$col = 0;
+                            //     } else {
+                            //         $r->$col = $score;
+                            //     }
+                            // }
+                            //This is the original code foe getting the respective uplaod/
+                            //Working code below is Temp t get all columns at the same time for Pilot Session
+
+                            //Also is all tests are 0 then, student is regarded as absent which will set -200 as AW
+
+                            $r->test1Score = $row[3];
+                            $r->test2Score = $row[4];
+                            $r->assignment1Score = $row[5];
+                            $r->assignment2Score = $row[6];
+                            if (
+                                ($row[3] + $row[4] + $row[5] + $row[6]) == 0 ||
+                                strtolower($row[10]) == "abs"
+                            ) {
+                                $r->examination = -200;
                             } else {
-                                if ($score > $sbr->$col) {
-                                    $r->$col = $sbr->$col;
-                                } else if ($score < 0) {
-                                    $r->$col = 0;
-                                } else {
-                                    $r->$col = $score;
-                                }
+                                $r->examination = $row[10];
                             }
                         }
                         $r->grade = GradesServices::computeGrade($r->total);
@@ -120,11 +137,10 @@ class ScoresUploadController extends Controller
             }
             $query = substr($query, 0, (strlen($query) - 1));
             $query .= ";";
-            //dd($query);
             DB::insert($query);
             DB::commit();
             ScoresUploadedEvent::dispatch(auth()->user()->file_no, $request->prog_id, $request->course_id, $prog->DEPT_ID, session('scoreType'));
-
+            session()->flash('message', 'Scores Succesfully uploaded');
             return redirect()->back();
             //dd("commit", time() - $now);
         } catch (\Exception $e) {

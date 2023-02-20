@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Student extends Model
 {
     use HasFactory;
-    //protected   $connection = 'habuDb';
     public $timestamps = false;
 
     public function getFullnameAttribute()

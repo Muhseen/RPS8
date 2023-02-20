@@ -1,12 +1,12 @@
 @extends('dashboard.base')
 @section('content')
-	<script src="{{ asset('js/rps/processResults.js') }}" type="text/javascript" defer> </script>
+	<script src="{{ asset('js/rps/processResults.js') }}" type="text/javascript" defer></script>
 	<form action="/processResults" method="POST">
 		@csrf
 		<div class="container">
 			@include('partials.messages')
 			<div class="card-header">
-				<h3 class="text-uppercase">Process {{ auth()->user()->staff->department }} results</h3>
+				<h3 class="text-uppercase">Process {{ auth()->user()?->staff->department ?? 'N/A' }} results</h3>
 			</div>
 			<div class="row">
 				<div class="col-lg-4 col-md-6 col-sm-12">

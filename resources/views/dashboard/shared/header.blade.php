@@ -18,11 +18,11 @@
 		<span class="h2 mt-3">Kaduna Polytechnic RPS</span>
 		<ul class="c-header-nav ml-auto mr-4">
 			<li class="c-header-nav-item d-md-down-none mx-2"><a class="c-header-nav-link">
-					<strong style="color: white">{{ auth()->user()->staff->fullname }}</strong></a></li>
-			<li class="c-header-nav-item dropdown"><a class="c-header-nav-link" data-toggle="dropdown" href="#" role="button"
-					aria-haspopup="true" aria-expanded="false">
-					<div class="c-avatar"><img class="c-avatar-img" src="{{ url('/assets/img/avatars/6.jpg') }}"
-							alt="user@email.com"></div>
+					<strong style="color: white">{{ auth()->user()?->staff->fullname ?? 'N/A' }}</strong></a></li>
+			<li class="c-header-nav-item dropdown"><a class="c-header-nav-link" data-toggle="dropdown" href="#"
+					role="button" aria-haspopup="true" aria-expanded="false">
+					<div class="c-avatar"><img class="c-avatar-img" src="{{ url('/assets/img/avatars/6.jpg') }}" alt="user@email.com">
+					</div>
 				</a>
 				<div class="dropdown-menu dropdown-menu-right pt-0">
 					<div class="dropdown-header bg-light py-2"><strong>Account</strong></div><a class="dropdown-item" href="#">
@@ -40,8 +40,7 @@
 							<use xlink:href="{{ url('/icons/sprites/free.svg#cil-settings') }}"></use>
 						</svg> Settings</a><a class="dropdown-item" href="#">
 						<a class="dropdown-item" href="#">
-							<a href="{{ route('logout') }}"
-								onclick="event.preventDefault();document.getElementById('logout-form').submit();"
+							<a href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();"
 								class="btn btn-ghost-dark btn-block">Logout</a>
 
 						</a>

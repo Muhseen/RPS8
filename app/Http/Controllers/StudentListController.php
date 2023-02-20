@@ -8,7 +8,7 @@ use App\Models\Course;
 use App\Models\CourseRegistration;
 use App\Models\Programme;
 use Exception;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx as writer;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory as reader;
 use Illuminate\Support\Str;
@@ -120,10 +120,11 @@ class StudentListController extends Controller
                 }
             }
 
-            $writer = new Xlsx($sSheet);
-            $writer->save("new file.xlsx");
+            $writer = new writer($sSheet);
+            $writer->save("new file.xlsx", 1);
             $file = public_path('new file.xlsx');
             $filename = str_replace('', '-', $dept->DEPARTMENT) . "-" . str_replace('', '-', $course->COURSE_CODE) . "-" . str_replace('', '-', $progtype) . "-" . str_replace('', '-', $session);
+
             $filename = Str::upper(str_replace('/', '_', $filename));
             return Response::download($file, $filename . ".xlsx", []);
         } else {
@@ -172,7 +173,7 @@ class StudentListController extends Controller
                     $worksheet->setCellValue($cols[$cbr->practical_count + 1] . $index, "=" . $cols[$cbr->practical_count] . $index . "/" . $cbr->practical_count);
                     $index++;
                 }
-                $writer = new Xlsx($sSheet);
+                $writer = new writer($sSheet);
                 $writer->save("new file.xlsx");
                 $file = public_path('new file.xlsx');
                 $filename = "PRACTICALS-" . str_replace('', '-', $dept->DEPARTMENT) . "-" . str_replace('', '-', $course->COURSE_CODE) . "-" . str_replace('', '-', $prog->PROG_TYPE) . "-" . str_replace('', '-', $session);

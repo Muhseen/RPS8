@@ -79,8 +79,8 @@
 										</svg>
 									</span>
 								</div>
-								<input class="form-control" type="text" id="email" placeholder="{{ __('E-mail Address') }}" name="email"
-									value="{{ old('email') }}" required>
+								<input class="form-control" type="text" id="email" placeholder="{{ __('E-mail Address') }}"
+									name="email" value="{{ old('email') }}" required>
 							</div>
 							<div class="input-group mb-3">
 								<div class="input-group-prepend">
@@ -111,8 +111,8 @@
 										</svg>
 									</span>
 								</div>
-								<select class="form-control" type="text" placeholder="{{ __('Role') }}" name="role"
-									value="{{ old('role') }}" required autofocus>
+								<select class="form-control" type="text" placeholder="{{ __('Role') }}" name="menuroles"
+									value="{{ old('menuroles') }}" required autofocus>
 									<option value="NIL">No Role(Just Lecturer)</option>
 									<option value="TTO">Time Table Officer</option>
 									<option value="EO">Exam Officer</option>
@@ -144,18 +144,18 @@
 					</div>
 					<div class="card-footer p-4">
 						<!-- <div class="row">
-																																																														<div class="col-6">
-																																																																<button class="btn btn-block btn-facebook" type="button">
-																																																																		<span>facebook</span>
-																																																																</button>
-																																																														</div>
-																																																														<div class="col-6">
-																																																																<button class="btn btn-block btn-twitter" type="button">
-																																																																		<span>twitter</span>
-																																																																</button>
-																																																														</div>
-																																																												</div>
-																																																										-->
+																																																																			<div class="col-6">
+																																																																					<button class="btn btn-block btn-facebook" type="button">
+																																																																							<span>facebook</span>
+																																																																					</button>
+																																																																			</div>
+																																																																			<div class="col-6">
+																																																																					<button class="btn btn-block btn-twitter" type="button">
+																																																																							<span>twitter</span>
+																																																																					</button>
+																																																																			</div>
+																																																																	</div>
+																																																															-->
 					</div>
 				</div>
 			</div>

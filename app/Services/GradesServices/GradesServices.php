@@ -37,7 +37,10 @@ class GradesServices
                 return 'D';
             case $score >= 40 && $score <= 44:
                 return 'E';
-            case $score >= 0 && $score <= 39:
+
+            case $score >= 38 && $score <= 39:
+                return '-E';
+            case $score >= 0 && $score <= 37:
                 return 'F';
             case $score == -100:
                 return "AE";
@@ -91,7 +94,9 @@ class GradesServices
                 return 2.25;
             case $score >= 40 && $score <= 44:
                 return 2.0;
-            case $score >= 0 && $score <= 39:
+            case $score >= 38 && $score <= 39:
+                return 2.0;
+            case $score >= 0 && $score <= 37:
                 return 0.0;
             case $score < 0:
                 return 0.0;

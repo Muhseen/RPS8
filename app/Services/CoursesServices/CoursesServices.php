@@ -10,6 +10,17 @@ class CoursesServices
     {
         return Course::where('PROG_ID', $progID)->orderBy('COURSE_CODE')->get();
     }
+    public static function getCoursesByProgIDAndSemester($progID, $semester)
+    {
+        $courses = Course::where('PROG_ID', $progID)->where('SEMESTER', 'FIRST')->orderBy('COURSE_CODE')->get();
+        $result = [];
+        foreach ($courses as $course) {
+            $result[] = ['course_rel' => $course];
+        }
+        return $result;
+        return Course::where('PROG_ID', $progID)->where('SEMESTER', $semester)->orderBy('COURSE_CODE')->get();
+    }
+
     public static function getCourseByCodeLike($code)
     {
         $courses = Course::where('DEPT_ID', auth()->user()->staff->dept_id)

@@ -18,6 +18,7 @@ use mysqli;
 
 class ResultProcessingController extends Controller
 {
+    public  $allGrades;
     public function __construct()
     {
         $this->allGrades = ["AA", "A", "AB", "B", "BC", "C", "CD", "D", "E", "F", "AE", "AW", "PC", "NA", "OP", "EM", "NR", "SK", "CP", "DE", "DF"];
@@ -31,7 +32,6 @@ class ResultProcessingController extends Controller
     public function process(ProcessResultRequest  $request)
     {
         $start = memory_get_usage();
-        //dd($start);
         $grades = array('A', 'AB', 'B', 'BC', 'C', 'CD', 'D', 'DE', 'E', 'EF', 'F', 'AW', 'AE');
         $level = $request->level;
         $prog_id = $request->prog_id;
@@ -49,9 +49,12 @@ class ResultProcessingController extends Controller
                 ->with('registration', function ($query) use ($session, $semesters, $sem) {
                     return $query->where(['SESSION' => $session, 'SEMESTER' => $semesters[$sem - 1]]);
                 })->get();
-            if ($students->count() == 0) {
+
+            //$students  = Student::with('registration')->get();
+            if ($students->count() == 0) {;
                 return back()->withErrors("No Students with the specified criteria or No Student Has registered for selected Criteria");
             }
+
             $stats = CourseRegistration::where(['SESSION' => $session, 'SEMESTER' => $semesters[$sem - 1], 'PROG_ID' => $prog_id, 'LEVEL' => $level])->with('course')->get();
             $sTable = "<table class='table table-boredered table-striped'><tr><th>Course</th> <th>COURSE CODE</th>";
             for ($i = 0; $i < count($this->allGrades); $i++) {
