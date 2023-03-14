@@ -52,12 +52,12 @@ class StudentListController extends Controller
             ])->with('student:FIRST_NAME,MIDDLE_NAME,LAST_NAME,REG_NUMBER')->get();
 
             $scoresBreakDown = ScoresBreakDown::where('course_id', $course->COURSE_ID)->first();
-            if ($scoresBreakDown     == null) {
+            if ($scoresBreakDown == null) {
                 $scoresBreakDown =   new ScoresBreakDown();;
                 $scoresBreakDown->test1Score = 10;
                 $scoresBreakDown->test2Score = 10;
                 $scoresBreakDown->assignment1Score = 10;
-                $scoresBreakDown->asignment2Score = 10;
+                $scoresBreakDown->assignment2Score = 10;
                 $scoresBreakDown->examination = 60;
                 $scoresBreakDown->practicalScore = 0;
                 $scoresBreakDown->practical_count = 0;
@@ -68,7 +68,7 @@ class StudentListController extends Controller
             } else {
                 $worksheet->setCellValue("A2", "COLLEGE OF " . Str::upper($dept->college->COLLEGE));
                 $worksheet->setCellValue("A3", "DEPARTMENT OF " . Str::upper($dept->DEPARTMENT));
-                $worksheet->setCellValue("A4", $course->COURSE_CODE . " (" . $progtype . ") " . $dept->DEPARTMENT . ", " . $session . " SESSION");
+                $worksheet->setCellValue("A4", $course->COURSE_CODE . " (" . ucfirst($progtype) . ") " . $dept->DEPARTMENT . ", " . $session . " SESSION");
                 $metric = $scoresBreakDown->examination / 100;
                 $minTest = $scoresBreakDown->test1Score + $scoresBreakDown->test2Score + $scoresBreakDown->assignment1Score + $scoresBreakDown->assignment2Score + $scoresBreakDown->practicalScore;
                 $index = 7;
@@ -93,8 +93,10 @@ class StudentListController extends Controller
                         $worksheet->setCellValue("G" . $index, $reg->assignment2Score ?? 0);
                         $worksheet->setCellValue("H" . $index, $reg->practical1Score ?? 0);
                         //$worksheet->setCellValue("I" . $index, 0);
-                        $worksheet->setCellValue("J" . $index, "=MIN({$minTest},SUM(D" . $index . ":I" . $index . "))");
-                        $worksheet->setCellValue("K" . $index, ($reg->examination * (100 / $scoresBreakDown->examination)));
+                        //dd('=IF(MIN(' . $minTest . ',SUM(D' . $index . ':I' . $index . '))=0,"abs",MIN(' . $minTest . ',SUM(D' . $index . ':I' . $index . ')))');
+                        $worksheet->setCellValue("J" . $index, '=IF(MIN(' . $minTest . ',SUM(D' . $index . ':I' . $index . '))=0,"abs",MIN(' . $minTest . ',SUM(D' . $index . ':I' . $index . ')))');
+                        $worksheet->setCellValue("K" . $index, $reg->examination_100 == -200 ? "abs" : $reg->examination_100);
+                        //$worksheet->setCellValue("K" . $index, ceil($reg->examination_100 * (100 / $scoresBreakDown->examination)));
                         $worksheet->setCellValue("L" . $index, "=MIN({$scoresBreakDown->examination},{$metric}*K" . $index . ")");
                         $worksheet->setCellValue("M" . $index, "=L" . $index . "+J" . $index);
                         $worksheet->setCellValue("N" . $index, "=VLOOKUP(M" . $index . ",Sheet2!\$A$1:\$B$11,2,TRUE)");
@@ -123,7 +125,7 @@ class StudentListController extends Controller
             $writer = new writer($sSheet);
             $writer->save("new file.xlsx", 1);
             $file = public_path('new file.xlsx');
-            $filename = str_replace('', '-', $dept->DEPARTMENT) . "-" . str_replace('', '-', $course->COURSE_CODE) . "-" . str_replace('', '-', $progtype) . "-" . str_replace('', '-', $session);
+            $filename = str_replace('', '-', $dept->DEPARTMENT) . "-" . str_replace('', '-', $course->COURSE_CODE) . "-" . str_replace('', '-',  ucfirst($progtype)) . "-" . str_replace('', '-', $session);
 
             $filename = Str::upper(str_replace('/', '_', $filename));
             return Response::download($file, $filename . ".xlsx", []);

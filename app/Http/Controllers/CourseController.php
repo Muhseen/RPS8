@@ -47,7 +47,7 @@ class CourseController extends Controller
         $attr = array_merge($attr, ['DEPT_ID' => auth()->user()->staff->dept_id, 'COURSE_ID' => $id]);
         //dd($attr);
         Course::create($attr);
-        session()->flash('message', 'Successfully aded course');
+        session()->flash('message', 'Successfully added course');
         return back();
     }
 
@@ -88,8 +88,8 @@ class CourseController extends Controller
     {
         $attr = $request->validated();
         $course->update($attr);
-        session()->flash('message', 'Succeflly updated the course details');
-        return back();
+        session()->flash('message', 'Succefully updated the course details');
+        return redirect('/courses');
     }
 
     /**
@@ -98,8 +98,10 @@ class CourseController extends Controller
      * @param  \App\Models\Course  $course
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Course $course)
+    public function destroy($id)
     {
-        //
+        $course = Course::find($id);
+        $course->delete();
+        return ['success' => 1];
     }
 }

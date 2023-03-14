@@ -1,26 +1,28 @@
 @extends('dashboard.base')
 @section('content')
-	<div class="container">
+	<div class="container card p-3">
 		@include('partials.messages')
 		<form method="POST" action="/scoresBreakDown">
 			@csrf
 			@method('PATCH')
-			<script src="{{ asset('/js/rps/scoreBreakDown.js') }}" defer type="text/javascript"> </script>
+			<script src="{{ asset('/js/rps/scoreBreakDown.js') }}" defer type="text/javascript"></script>
 			<div class="card-header" style="text-align:center;">
-				<h4>Set Score Breakdown for : {{ $course->COURSE_CODE }}:{{ $course->COURSE_NAME }},
+				<h2>Set Score Breakdown for : {{ $course->COURSE_CODE }}:{{ $course->COURSE_NAME }},
 					{{ $course->CREDIT_UNITS }}
-					Units</h4><br>
+					Units</h2><br>
 			</div>
+
 			<input type="hidden" name="course_id" value="{{ $course->COURSE_ID }}">
 			<div class="row mt-2">
-				<div class="co-lg-6 col-sm-12">
-					<div class="input-group mb-3 col-3">
+				<div class="col-lg-6 col-sm-12">
+					<div class="input-group mb-3 ">
 						<div class="input-group-prepend">
 							<span class="input-group-text">
 								<b>Test total</b>
 							</span>
 						</div>
-						<input type="number" min="0" max="100" value="40" id="testTotal" class="form-control" placeholder="">
+						<input type="number" min="0" max="100" value="40" id="testTotal" class="form-control"
+							placeholder="">
 						<div class="input-group-append">
 							<button id="subTest" type="button" onclick="incExamDecTest();" class="input-group-text">-</button>
 						</div>
@@ -30,8 +32,8 @@
 					</div>
 
 				</div>
-				<div class="co-lg-6 col-sm-12">
-					<div class="input-group mb-3 col-3 ">
+				<div class="col-lg-6 col-sm-12">
+					<div class="input-group mb-3 ">
 						<div class="input-group-prepend">
 							<span class="input-group-text"><b>Exam total</b></span>
 						</div>
@@ -46,7 +48,7 @@
 
 				</div>
 			</div>
-			<div class="row">
+			<div class="row mx-2">
 				<table class="table table-responsive table-striped">
 					<thead>
 						<tr>
@@ -125,7 +127,8 @@
 				</table>
 
 			</div>
-			<button type="submit" id="submit" class="btn btn-success">Submit</button>
+			<button type="submit" id="submit" class="btn btn-success">Set Breakdown</button>
+			<button type="reset" class="btn btn-outline-danger">Cancel</button>
 		</form>
 	</div>
 @endsection

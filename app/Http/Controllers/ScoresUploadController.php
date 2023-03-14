@@ -17,6 +17,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ScoresImport;
 use App\Models\ClassAllocation;
 use App\Models\ScoresUploadLog;
+use Illuminate\Support\Facades\Log;
 
 class ScoresUploadController extends Controller
 {
@@ -88,7 +89,7 @@ class ScoresUploadController extends Controller
             $sbr->examination = 60;
         } //s}
         try {
-            $query = "insert into course_registrations(SN,REG_NUMBER, COURSE_ID,SEMESTER, LEVEL, SESSION, YEAR, PROG_ID, REG_TYPE,  test1score,test2score,assignment1Score, assignment2Score, practical1Score, examination, grade, gradePoints) values ";
+            $query = "insert into course_registrations(SN,REG_NUMBER, COURSE_ID,SEMESTER, LEVEL, SESSION, YEAR, PROG_ID, REG_TYPE,  test1score,test2score,assignment1Score, assignment2Score, practical1Score, examination, grade_score, examination_100, grade, gradePoints) values ";
             $indices = ['first c.a' => 0, 'second c.a' => 1, 'first assignment' => 2, 'second assignment' => 3, 'practical1Score' => 4, 'examination' => 5];
             $columns = ['test1Score', 'test2Score', 'assignment1Score', 'assignment2Score', 'practicalScore', 'examination'];
             $excelIndex = [3, 4, 5, 6, 7, 10];
@@ -119,19 +120,24 @@ class ScoresUploadController extends Controller
                             $r->test2Score = $row[4];
                             $r->assignment1Score = $row[5];
                             $r->assignment2Score = $row[6];
-                            if (
-                                ($row[3] + $row[4] + $row[5] + $row[6]) == 0 ||
-                                strtolower($row[10]) == "abs"
-                            ) {
+                            if (($row[3] + $row[4] + $row[5] + $row[6]) == 0) {
+                                $r->examination_100 = ($row[10]);
+                                $r->examination = ($row[10] / 100) * $sbr->examination;
+                                $r->grade_score = -200;
+                            } else if (strtolower(trim($row[10])) == "abs") {
+                                $r->grade_score = -200;
+                                $r->examination_100 = -200;
                                 $r->examination = -200;
                             } else {
-                                $r->examination = $row[10];
+                                $r->examination_100 = ($row[10]);
+                                $r->examination = ($row[10] / 100) * $sbr->examination;
+                                $r->grade_score = $r->score_total();
                             }
                         }
                         $r->grade = GradesServices::computeGrade($r->total);
                         $r->gradePoints = $course->CREDIT_UNITS * GradesServices::computePoints($r->total);
                         //dd(GradesServices::computeGrade($r->total), $r, $sbr->$col, $row[$excelIndex[$index]], $r->REG_NUMBER, $course->CREDIT_UNITS);
-                        $query .= "('$r->SN','$r->REG_NUMBER','$r->COURSE_ID','$r->SEMESTER','$r->LEVEL','$r->SESSION','$r->YEAR','$r->PROG_ID','$r->REG_TYPE','$r->test1Score','$r->test2Score','$r->assignment1Score','$r->assignment2Score','$r->practical1Score', '$r->examination','$r->grade','$r->gradePoints') ,";
+                        $query .= "('$r->SN','$r->REG_NUMBER','$r->COURSE_ID','$r->SEMESTER','$r->LEVEL','$r->SESSION','$r->YEAR','$r->PROG_ID','$r->REG_TYPE','$r->test1Score','$r->test2Score','$r->assignment1Score','$r->assignment2Score','$r->practical1Score', '$r->examination','$r->grade_score','$r->examination_100','$r->grade','$r->gradePoints') ,";
                     }
                 }
             }
@@ -142,11 +148,10 @@ class ScoresUploadController extends Controller
             ScoresUploadedEvent::dispatch(auth()->user()->file_no, $request->prog_id, $request->course_id, $prog->DEPT_ID, session('scoreType'));
             session()->flash('message', 'Scores Succesfully uploaded');
             return redirect()->back();
-            //dd("commit", time() - $now);
         } catch (\Exception $e) {
             //dd($e);
             DB::rollBack();
-            dd($e);
+            Log::error($e);
             return back()->withErrors($e);
         }
     }

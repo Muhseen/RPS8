@@ -84,7 +84,12 @@ Route::middleware(['auth'])->group(function () {
         return StaffServices::getStaffByFileNo($request->file_no);
     });
     Route::get('/getStudentByRegNo', function (HttpRequest $request) {
-        return Student::with(['programme', 'department', 'programme.course'])->where('REG_NUMBER', $request->reg_no)->first();
+        $student = Student::with(['programme', 'department', 'programme.course'])->where('REG_NUMBER', $request->reg_no)->first();
+        if ($student->DEPT_ID == auth()->user()->staff->dept_id) {
+            return $student;
+        }
+
+        return  response('Forbidden', 403, []);
     });
 
     Route::get('/getProgrammesByDeptAndType', function (HttpRequest $request) {
@@ -159,16 +164,16 @@ Route::get('/test', function () {
     dd($q, $data, $headers);
 });
 
-Route::get('/processReg', function () {
+Route::get('/processReg/{id}', function ($prog_id) {
     //DB::table('rps_course_registrations')->truncate();
-    DB::table('course_registrations')->truncate();
-    $course = Course::all();
+    DB::beginTransaction();
+    DB::table('course_registrations')->where('PROG_ID', $prog_id)->delete();
+    $course = Course::whereProgId($prog_id)->get();
     $course_by_prog  = $course->groupBy('PROG_ID');
     $query = "";
     $count = 0;
 
     foreach ($course_by_prog  as $prog_courses) {
-        $prog_id = $prog_courses->first()->PROG_ID;
         $students = Student::where('PROG_ID', $prog_id)->where('ENTRY_SESSION', '2020/2021')->where('REGNO_STATUS', 1)->get();
         if ($students->count() == 0) {
             $count++;
@@ -184,9 +189,11 @@ Route::get('/processReg', function () {
     //dd($count);
     $query = substr($query, 0, (strlen($query) - 1));
     $query .= ";";
-
-    DB::insert($query);
-    dd("done");
+    if (strlen(trim($query)) > 1) {
+        DB::insert($query);
+    }
+    DB::commit();
+    return ['success' => 1];
 });
 
 /*

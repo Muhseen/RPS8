@@ -17,6 +17,10 @@ class CourseRegistration extends Model
     }
     public function getTotalAttribute()
     {
+        return $this->grade_score; //$this->test1Score + $this->test2Score + $this->assignment1Score + $this->assignment2Score + $this->practical1Score + $this->examination;
+    }
+    public function getScoreTotalAttribute()
+    {
         return $this->test1Score + $this->test2Score + $this->assignment1Score + $this->assignment2Score + $this->practical1Score + $this->examination;
     }
     public function course()

@@ -18,7 +18,9 @@ class dashboardController extends Controller
 {
     public function index()
     {
-        //Role::create(['name' => 'HOD']);
+        // auth()->user()->assignRole('HOD');
+        // dd(auth()->user()->roles, auth()->user()->can('set-breakdown'), Role::all());
+        // //Role::create(['name' => 'HOD']);
         //auth()->user()->assignRole('HOD');
         //dd(auth()->user()->staff);
         $dept_id = auth()->user()->staff->dept->DEPT_ID ?? 13;

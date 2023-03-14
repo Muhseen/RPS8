@@ -28,10 +28,13 @@
 	<meta name="msapplication-TileImage" content="assets/favicon/ms-icon-144x144.png">
 	<meta name="theme-color" content="#ffffff">
 	<!-- Icons-->
+	<script src="{{ asset('js/rps/jquery-3.4.1.min.js') }}"></script>
+
 	<link href="{{ asset('css/free.min.css') }}" rel="stylesheet"> <!-- icons -->
 	<!--<link href="{{ asset('css/flag-icon.min.css') }}" rel="stylesheet"> <!-- icons -->
 	<!--Main styles for this application-->
 	<link href="{{ asset('css/style.css') }}" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 	@yield('css')
 
@@ -42,16 +45,16 @@
 
 
 	<script>
-	 window.dataLayer = window.dataLayer || [];
+		window.dataLayer = window.dataLayer || [];
 
-	 function gtag() {
-	  dataLayer.push(arguments);
-	 }
-	 gtag('js', new Date());
-	 // Shared ID
-	 gtag('config', 'UA-118965717-3');
-	 // Bootstrap ID
-	 gtag('config', 'UA-118965717-5');
+		function gtag() {
+			dataLayer.push(arguments);
+		}
+		gtag('js', new Date());
+		// Shared ID
+		gtag('config', 'UA-118965717-3');
+		// Bootstrap ID
+		gtag('config', 'UA-118965717-5');
 	</script>
 
 	<link href="{{ asset('css/coreui-chartjs.css') }}" rel="stylesheet">
@@ -79,7 +82,6 @@
 
 
 	<!-- CoreUI and necessary plugins-->
-	<script src="{{ asset('js/rps/jquery-3.4.1.min.js') }}"></script>
 	<script src="{{ asset('js/coreui.bundle.min.js') }}"></script>
 	<script src="{{ asset('js/coreui-utils.js') }}"></script>
 	@yield('javascript')

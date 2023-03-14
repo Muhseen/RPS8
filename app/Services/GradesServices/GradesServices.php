@@ -17,8 +17,11 @@ class GradesServices
     public static function computeGrade($score)
     {
 
+        if ($score >= 75 && $score <= 100) {
+            return 'A';
+        }
         switch ($score) {
-            case $score >= 75 && $score <= 100:
+            case ($score >= 75 && $score <= 100):
                 return 'A';
                 break;
             case $score >= 70 && $score <= 74:
@@ -73,9 +76,13 @@ class GradesServices
     }
     public static function computePoints($score)
     {
+        if ($score >= 75 && $score <= 100) {
+            return 4.0;
+        }
+
 
         switch ($score) {
-            case $score >= 75 && $score <= 100:
+            case ($score >= 75 && $score <= 100):
                 return 4.0;
                 break;
             case $score >= 70 && $score <= 74:

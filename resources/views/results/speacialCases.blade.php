@@ -1,12 +1,17 @@
 @extends('dashboard.base')
 @section('content')
-	<div class="container">
+	<div class="container card p-3">
 		@include('partials.messages')
 		<script defer src="{{ asset('js/rps/specialCases.js') }} " type="text/javascript"></script>
-
-		<div class="row">
+		<style>
+			label {
+				font-weight: bold !important;
+			}
+		</style>
+		<div class="row ml-2">
 			<h2>Capture Grades for special cases like Paper Cancellation,Absent with Excuse ...etc</h2>
 		</div>
+		<hr>
 		<div class="row">
 			<div class="col-lg-6 col-md-6 col-sm-12">
 				<div class="form-group"><label for="">
@@ -67,13 +72,12 @@
 						<label for="">Sessions
 						</label>
 						<select name="session" id="session" class="form-control" value="{{ old('session') }}">
-							<option value="2019/2020">2019/2020</option>
-							<option value="2020/2021">2020/2021</option>
 							<option value="2021/2022">2021/2022</option>
 							<option value="2022/2023">2022/2023</option>
+							<option value="2023/2024">2023/2024</option>
 						</select>
 					</div>
-					<div class="col-lg-2 col-md-6 col-sm-12 ">
+					<div class="col-lg-2 col-md-6 col-sm-12  ">
 						<button class="btn btn-success mt-4" type="submit">Process Case</button>
 					</div>
 				</div>
@@ -132,13 +136,12 @@
 						<label for="">Session
 						</label>
 						<select name="session" id="session" class="form-control" value="{{ old('session') }}">
-							<option value="2019/2020">2019/2020</option>
-							<option value="2020/2021">2020/2021</option>
 							<option value="2021/2022">2021/2022</option>
 							<option value="2022/2023">2022/2023</option>
+							<option value="2023/2024">2023/2024</option>
 						</select>
 					</div>
-					<div class="col-lg-2 col-md-6 col-sm-12">
+					<div class="col-lg-2 col-md-6 col-sm-12 mt-3">
 						<button class="btn btn-success" type="submit">Process Case</button>
 					</div>
 				</div>
